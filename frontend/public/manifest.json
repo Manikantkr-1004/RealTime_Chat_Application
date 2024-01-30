@@ -1,0 +1,25 @@
+{
+  "short_name": "Private Chat",
+  "name": "Private Chat",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2899/2899298.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2899/2899298.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2899/2899298.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0004ff",
+  "background_color": "#ffffff"
+}
