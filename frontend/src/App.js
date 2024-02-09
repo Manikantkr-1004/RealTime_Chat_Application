@@ -17,12 +17,12 @@ function App() {
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
   const [chat, setChat] = useState(false);
-  const [emojiEnable,setEmojiEnable] = useState(false);
+  const [emojiEnable, setEmojiEnable] = useState(false);
   const [message, setMessage] = useState([]);
   const [loading, setLoading] = useState(false);
   const chatRef = useRef(null);
   const audioRef = useRef([]);
-  const [roomHistory,setRoomHistory] = useState(JSON.parse(sessionStorage.getItem('room_data')) || []);
+  const [roomHistory, setRoomHistory] = useState(JSON.parse(sessionStorage.getItem('room_data')) || []);
   const [userMessage, setUserMessage] = useState('');
 
   const handleJoin = async (e) => {
@@ -35,14 +35,14 @@ function App() {
       await socket.emit('join_room', { name, room, time, position: 'center', userMessage: `${name} joined this room` });
       setLoading(false);
       setMessage(prev => [...prev, { name, room, time, position: 'center', userMessage: `You joined this room` }]);
-      
-      let finding = roomHistory.find((ele)=> ele.room === room);
-      if(finding){
-        let updateRoomHistory = roomHistory.map((ele)=> ele.room===room ? {...ele, name:name}: ele);
+
+      let finding = roomHistory.find((ele) => ele.room === room);
+      if (finding) {
+        let updateRoomHistory = roomHistory.map((ele) => ele.room === room ? { ...ele, name: name } : ele);
         setRoomHistory(updateRoomHistory)
-      }else{
-        let newRoomHistory = {name,room};
-        setRoomHistory((prev)=> [...prev,newRoomHistory]);
+      } else {
+        let newRoomHistory = { name, room };
+        setRoomHistory((prev) => [...prev, newRoomHistory]);
       }
 
       setChat(true);
@@ -61,7 +61,7 @@ function App() {
 
     socket.on('left_room', (data) => {
       let time = new Date().toLocaleTimeString('en-US');
-      setMessage(prev => [...prev, { ...data,time, position: 'center', userMessage: `${data.name} left this room` }]);
+      setMessage(prev => [...prev, { ...data, time, position: 'center', userMessage: `${data.name} left this room` }]);
     });
 
     return () => {
@@ -76,15 +76,15 @@ function App() {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-    if(message.length > 0 && message[message.length-1].name!==name) {
+    if (message.length > 0 && message[message.length - 1].name !== name) {
       audioRef.current[0].play();
     }
 
   }, [message]);
 
   useEffect(() => {
-    if(roomHistory.length>0){
-      sessionStorage.setItem('room_data',JSON.stringify(roomHistory));
+    if (roomHistory.length > 0) {
+      sessionStorage.setItem('room_data', JSON.stringify(roomHistory));
     }
   }, [roomHistory])
 
@@ -100,15 +100,42 @@ function App() {
     }
   }
 
-  const handleSendButton = (e)=>{
-    console.log(e);
-    if(e.key === "Enter"){
+  const handleSendButton = (e) => {
+    if (e.key === "Enter") {
       handleSendMessage();
     }
   }
 
-  const handleEmoji = (emoji)=>{
-    setUserMessage((prev)=> prev+emoji.emoji);
+  const handleEmoji = (emoji) => {
+    setUserMessage((prev) => prev + emoji.emoji);
+  }
+
+  const handleMessage = (mess) => {
+    const urlRegex = /((?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z0-9()]{2,}(?:\/[^\s]*)?)/g;
+    const parts = mess.split(urlRegex);
+
+    const elements = parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a key={index} href={part} target="_blank">
+            {part}
+          </a>
+        );
+      } else {
+        return part;
+      }
+    });
+
+    return elements;
+  };
+
+  const checkMess = (mess)=>{
+    let checking = mess.trim().split(" ");
+    if(checking.length===2 && checking[0]==='img'){
+      return true;
+    }else{
+      return false;
+    }
   }
 
   return (
@@ -121,17 +148,18 @@ function App() {
         <input value={name} onChange={(e) => setName(e.target.value)} type='text' name='name' autoComplete='true' placeholder='Enter Your Name' required /><br /><br />
         <input value={room} onChange={(e) => setRoom(+e.target.value)} type='number' name='room' placeholder='Enter Room No.' required /><br /><br />
         <button type='submit' name='submit'>{loading ? <FontAwesomeIcon size='lg' spin icon={faSpinner} /> : "Join Room"}</button>
-        <br/>
+        <br />
         <p>To Chat with Another, Tell that Person to Join with Same Room No in Which Room No. You Joined or want to Join.</p>
-        {roomHistory.length>0 && <Recently roomHistory={roomHistory} setName={setName} setRoom={setRoom} handleJoin={handleJoin} />}
+        {roomHistory.length > 0 && <Recently roomHistory={roomHistory} setName={setName} setRoom={setRoom} handleJoin={handleJoin} />}
       </form>}
       {chat && <div className='animate__animated animate__fadeIn' id='chat-container'>
         <div ref={chatRef} className='chat'>
-        {
+          {
             message?.map((ele, ind) => (
               <div key={ind} className={ele.position === 'center' ? 'animate__animated animate__fadeInUp chat-center' : ele.position === 'left' ? 'chat-left' : 'chat-right'}>
-                <div>{ele.userMessage}</div>
-                {ele.position === 'center' && ele.time!==null && <div><FontAwesomeIcon size='sm' icon={faClock} /> {ele.time}</div>}
+                {!checkMess(ele.userMessage) && <div>{handleMessage(ele.userMessage)}</div>}
+                {checkMess(ele.userMessage) && <div><img style={{width:'100%', borderRadius:"2px 9px 9px 9px"}} src={ele.userMessage.split(' ')[1]} alt='wrong url' /></div>}
+                {ele.position === 'center' && ele.time !== null && <div><FontAwesomeIcon size='sm' icon={faClock} /> {ele.time}</div>}
                 {ele.position !== 'center' && <div><FontAwesomeIcon size='sm' icon={faCheckCircle} /> {ele.name === name ? 'You' : ele.name} {ele.time}</div>}
               </div>
             ))
@@ -139,15 +167,15 @@ function App() {
         </div>
         <div className='sending'>
           <div className='inputarea'>
-            <div onClick={()=> setEmojiEnable(!emojiEnable)}>😀</div>
-            <textarea onKeyDown={(e)=>handleSendButton(e)} value={userMessage} onChange={(e) => setUserMessage(e.target.value)} type='text' placeholder='Type Your Message...' ></textarea>
+            <div onClick={() => setEmojiEnable(!emojiEnable)}>😀</div>
+            <textarea onKeyDown={(e) => handleSendButton(e)} value={userMessage} onChange={(e) => setUserMessage(e.target.value)} type='text' placeholder='Type Your Message...' ></textarea>
           </div>
           <button onClick={handleSendMessage}><FontAwesomeIcon size='lg' icon={faPaperPlane} /></button>
         </div>
       </div>}
 
       {emojiEnable && <div className='emoji'>
-        <EmojiPicker onEmojiClick={(e)=> handleEmoji(e)} width='100%' height='100%' />
+        <EmojiPicker onEmojiClick={(e) => handleEmoji(e)} width='100%' height='100%' />
       </div>}
     </div>
   )
