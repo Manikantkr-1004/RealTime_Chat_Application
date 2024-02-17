@@ -8,6 +8,7 @@ Privatetalk, my innovative chat application, utilizes Socket.IO to enable real-t
 
  - For Frontend:- https://privatetalk.netlify.app/
  - **To send images, write like this "img imageURL" and send**.
+ - **To make text bold, write like * ram * this**
  - **To send links, write simply as you write text messages**.
 
 <br>
