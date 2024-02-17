@@ -26,7 +26,7 @@ form>h1,.recently>h5 {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: changing 0.5s linear infinite;
+  animation: changing 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes changing {
@@ -35,6 +35,7 @@ form>h1,.recently>h5 {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    transform: translateY(-5px);
   }
 
   50% {
@@ -49,6 +50,7 @@ form>h1,.recently>h5 {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    transform: translateY(0);
   }
 }
 
@@ -57,12 +59,12 @@ form>img{
   margin: auto;
   display: block;
   pointer-events: none;
+  filter: hue-rotate(160deg);
   animation: moving 4s ease-in-out infinite alternate;
 }
 @keyframes moving {
   from{
     transform: scaleX(1);
-    filter:hue-rotate(200deg);
   }
   to{
     transform: scaleX(-1);
@@ -82,13 +84,13 @@ form>input{
   padding-left: 15px;
 }
 
-form>p, .recently>p{
+form p{
   text-align: justify;
-  margin-top: 40px;
+  margin-top: 20px;
   font-weight: 500;
   color: blue;
 }
-form>p::before, .recently>p::before{
+form p::before{
   content: 'Note:- ';
   color: red;
 }
@@ -240,33 +242,41 @@ form>button:active {
   bottom: 55px;
   cursor: pointer;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  animation: movingTop 0.5s ease-in-out;
 }
-
-.sending>div{
-  width: 100%;
-  height: 100%;
-  position: relative;
+@keyframes movingTop {
+  from{
+    opacity: 0;
+    bottom: -100%;
+  }
+  to{
+    opacity: 1;
+    bottom: 55px;
+  }
 }
-.sending>div>div{
-  position: absolute;
-  left: 5px;
-  top: 50%;
-  transform: translateY(-55%);
-  font-size: 23px;
-  cursor: pointer;
-  filter: saturate(0);
-}
-
-.sending>div>textarea {
-  width: 100%;
-  border: none;
-  height: 100%;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
+.inputarea{
+  width: 85%;
+  background: #fff;
+  border: 1px solid #c9c9c9;
   border-radius: 30px;
-  resize: none;
-  padding-left: 35px;
+  padding: 0 10px;
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
 }
+.inputarea>div{
+  width: 25px;
+  font-size: 25px;
+  padding-bottom: 5px;
+  cursor: pointer;
+}
+.inputarea>textarea{
+  width: calc(100% - 30px);
+  border: none;
+  resize: none;
+}
+
 .sending>div>textarea::-webkit-scrollbar{
   width: 3px;
 }
@@ -274,9 +284,9 @@ form>button:active {
   background: rgb(146, 146, 146);
 }
 
-.sending>div>textarea:focus {
+.inputarea>textarea:focus {
   outline: none;
-  border: 1px solid #c9c9c9;
+  border: none;
 }
 
 .sending>button {
@@ -299,13 +309,14 @@ form>button:active {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  padding-top: 10px;
 }
 
 .recently-parent div{
   width: 100%;
-  padding: 1px 6px;
+  padding: 5px 10px;
   border: 1px solid rgb(209, 209, 209);
-  background: #f0f0f0;
+  background: #dbdbdb;
   border-radius: 10px;
   font-weight: 500;
   transition: all ease-in-out 0.3s;

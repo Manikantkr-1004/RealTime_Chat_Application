@@ -96,7 +96,7 @@ function App() {
       await socket.emit('send_message', { name, room, time, position: 'left', userMessage })
       setMessage(prev => [...prev, { name, room, time, position: 'left', userMessage }]);
       audioRef.current[1].play();
-      setUserMessage('')
+      setUserMessage("")
     }
   }
 
@@ -112,8 +112,10 @@ function App() {
 
   const handleMessage = (mess) => {
     const urlRegex = /((?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z0-9()]{2,}(?:\/[^\s]*)?)/g;
+    const boldRegex = /\*(.*?)\*/g;
+  
     const parts = mess.split(urlRegex);
-
+  
     const elements = parts.map((part, index) => {
       if (urlRegex.test(part)) {
         return (
@@ -122,12 +124,14 @@ function App() {
           </a>
         );
       } else {
-        return part;
+        part = part.replace(boldRegex, '<b>$1</b>');
+        return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
       }
     });
-
+  
     return elements;
   };
+  
 
   const checkMess = (mess)=>{
     let checking = mess.trim().split(" ");
@@ -143,12 +147,13 @@ function App() {
       <audio ref={(e) => (audioRef.current[0] = e)} hidden src={notify}></audio>
       <audio ref={(e) => (audioRef.current[1] = e)} hidden src={sent}></audio>
       {!chat && <form className='animate__animated animate__fadeInUp' onSubmit={handleJoin}>
-        <h1>Welcome To Private Chat</h1>
-        <img src='https://civact.eu/templates/2ndc/images/animation/partners-anim.gif' alt='chat' />
+        <h1>Welcome To Private Talk</h1>
+        <img src='https://i.gifer.com/origin/98/98447b873b927d46f752e9e0fc9c2910_w200.gif' alt='chat' />
         <input value={name} onChange={(e) => setName(e.target.value)} type='text' name='name' autoComplete='true' placeholder='Enter Your Name' required /><br /><br />
         <input value={room} onChange={(e) => setRoom(+e.target.value)} type='number' name='room' placeholder='Enter Room No.' required /><br /><br />
         <button type='submit' name='submit'>{loading ? <FontAwesomeIcon size='lg' spin icon={faSpinner} /> : "Join Room"}</button>
         <br />
+        <p>Keep remember, Always enter unique and 4-10 digit as room no. for privacy & security.</p>
         <p>To Chat with Another, Tell that Person to Join with Same Room No in Which Room No. You Joined or want to Join.</p>
         {roomHistory.length > 0 && <Recently roomHistory={roomHistory} setName={setName} setRoom={setRoom} handleJoin={handleJoin} />}
       </form>}
@@ -167,7 +172,7 @@ function App() {
         </div>
         <div className='sending'>
           <div className='inputarea'>
-            <div onClick={() => setEmojiEnable(!emojiEnable)}>😀</div>
+            <div onClick={() => setEmojiEnable(!emojiEnable)}>🙂</div>
             <textarea onKeyDown={(e) => handleSendButton(e)} value={userMessage} onChange={(e) => setUserMessage(e.target.value)} type='text' placeholder='Type Your Message...' ></textarea>
           </div>
           <button onClick={handleSendMessage}><FontAwesomeIcon size='lg' icon={faPaperPlane} /></button>

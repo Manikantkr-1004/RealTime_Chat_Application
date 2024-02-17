@@ -10,12 +10,12 @@ export function Recently({roomHistory,setName,setRoom,handleJoin}) {
     return (
         <div className="recently">
             <h5>Recently Joined Room</h5>
-            <span style={{fontWeight:'500',color:'#b10000'}}>Click on Anyone Box👇 to Join with Same Room no and Name.</span>
+            <span style={{fontWeight:'500',color:'#b10000'}}>Double click on Anyone Box👇 to Join with Same Room no and Name.</span>
             <div className="recently-parent">
                 {
                     roomHistory?.map((ele,ind)=>(
                         <div onClick={()=>handleMakeJoin(ele.room,ele.name)}>
-                            <p>Room: {ele.room} with Name: {ele.name}</p>
+                            Room: {ele.room} - Name: {ele.name}
                         </div>
                     ))
                 }
